@@ -34,7 +34,7 @@ const UserSchema = new Schema<IUser>(
     facebookId: { type: String, select: false },
 
     firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    lastName: { type: String },
     userName: { type: String },
     securityNumber: { type: String },
     title: { type: String },
@@ -43,7 +43,7 @@ const UserSchema = new Schema<IUser>(
     dob: { type: Date },
     arrivalDate: { type: Date },
     language: { type: String },
-    passportNumber: { type: String, required: true },
+    passportNumber: { type: String },
     fcmToken: { type: String, default: "" },
   },
   { timestamps: true }

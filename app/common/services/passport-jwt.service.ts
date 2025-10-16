@@ -8,6 +8,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { Strategy as LocalStrategy } from "passport-local";
 import { type IUser } from "../../user/user.dto";
 import * as userService from "../../user/user.service";
+import * as adminService from "../../admin/admin.service";
 
 export const isValidPassword = async function (
   value: string,
@@ -80,6 +81,45 @@ export const initPassport = (): void => {
       }
     )
   );
+
+  passport.use(
+    "admin-login",
+    new LocalStrategy(
+      {
+        usernameField: "email",
+        passwordField: "password",
+      },
+      async (email, password, done) => {
+        try {
+          const admin = await userService.getUserByEmail(email, {
+            password: true,
+            firstName: true,
+            email: true,
+            role: true,
+          });
+
+          if (admin == null) {
+            done(createError(401, "Admin not found!"), false);
+            return;
+          }
+          if (admin.role !== "ADMIN") {
+            done(createError(401, "Admin not found!"), false);
+            return;
+          }
+          const validate = await isValidPassword(password, admin.password!);
+          if (!validate) {
+            done(createError(401, "Invalid email or password"), false);
+            return;
+          }
+
+          const { password: _p, ...result } = admin;
+          done(null, result, { message: "Admin logged in successfully" });
+        } catch (error: any) {
+          done(createError(500, error.message));
+        }
+      }
+    )
+  );
 };
 
 export const createUserTokens = (user: Omit<IUser, "password">) => {
@@ -90,7 +130,7 @@ export const createUserTokens = (user: Omit<IUser, "password">) => {
   const refreshToken = jwt.sign(user, jwtSecret, {
     expiresIn: "2d",
   });
-  
+
   return { accessToken, refreshToken };
 };
 

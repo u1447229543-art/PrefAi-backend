@@ -2,7 +2,6 @@ import axios from "axios";
 import { response, type Request, type Response } from "express";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import verifyAppleToken from "verify-apple-id-token";
 import { createResponse } from "../common/helper/response.hepler";
 import { sendEmail } from "../common/services/email.service";
 import {
@@ -308,11 +307,11 @@ export const getUserById = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getAllUser = asyncHandler(async (req: Request, res: Response) => {
-  const skip = req.query.skip ? parseInt(req.query.skip as string) : undefined;
+  const skip = req.query.skip ? parseInt(req.query.skip as string) : 1;
   const limit = req.query.limit
     ? parseInt(req.query.limit as string)
     : undefined;
-  const result = await userService.getAllUser({}, { skip, limit });
+  const result = await userService.getAllUser({}, { skip:skip - 1, limit });
   if (skip || limit) {
     const count = await userService.countItems();
     res.send(

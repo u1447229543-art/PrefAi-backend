@@ -14,7 +14,7 @@ const SCOPES = ["https://www.googleapis.com/auth/firebase.messaging"];
 async function getAccessToken(): Promise<string> {
   const client = new JWT({
     email: process.env.FCM_CLIENT_EMAIL,
-    key: process.env.FCM_PRIVATE_KEY?.replace(/\\n/g, "\n"), 
+    key: process.env.FCM_PRIVATE_KEY?.replace(/\\n/g, "\n"),
     scopes: ["https://www.googleapis.com/auth/firebase.messaging"],
   });
 
@@ -28,16 +28,16 @@ async function getAccessToken(): Promise<string> {
 }
 
 export async function sendPushNotification(
-  fcmToken: string, 
-  title: string, 
-  body: string, 
+  fcmToken: string,
+  title: string,
+  body: string,
   data?: Record<string, any>
 ) {
   try {
     const accessToken = await getAccessToken();
-    console.log(fcmToken,"fcmToken")
-    console.log(data,"data")
-    
+    console.log(fcmToken, "fcmToken");
+    console.log(data, "data");
+
     const response = await axios.post(
       `https://fcm.googleapis.com/v1/projects/${process.env.FCM_PROJECT_ID}/messages:send`,
       {
@@ -57,7 +57,7 @@ export async function sendPushNotification(
         },
       }
     );
-    
+
     console.log("FCM Response:", response.data);
     return response.data;
   } catch (err) {

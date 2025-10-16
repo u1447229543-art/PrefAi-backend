@@ -26,6 +26,7 @@ const documentSchema = new mongoose.Schema(
       type: String,
       required: true,
       index: true,
+      ref: "user",
     },
     uri: {
       type: String,
@@ -48,7 +49,7 @@ const documentSchema = new mongoose.Schema(
     },
     folderId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'folder',
+      ref: "folder",
       required: true,
       index: true,
     },
