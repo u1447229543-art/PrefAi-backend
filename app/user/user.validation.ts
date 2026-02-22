@@ -90,6 +90,32 @@ export const verifyEmail = checkExact([
     }),
 ]);
 
+export const resetPasswordByEmail = checkExact([
+  body("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Email must be valid")
+    .custom(async (value) => {
+      const user = await userService.getUserByEmail(value);
+      if (!user) {
+        throw new Error("User not found!");
+      }
+      return true;
+    }),
+  body("newPassword")
+    .notEmpty()
+    .withMessage("New password is required")
+    .isString()
+    .withMessage("New password must be a string"),
+  body("confirmPassword").custom((value, { req }) => {
+    if (value !== req.body.newPassword) {
+      throw new Error("Password confirmation does not match");
+    }
+    return true;
+  }),
+]);
+
 export const forgotPassword = checkExact([
   body("email")
     .notEmpty()

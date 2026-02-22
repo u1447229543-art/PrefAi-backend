@@ -41,7 +41,7 @@ router
   )
   .post(
     "/reset-password",
-    userValidator.verifyInvitation,
+    userValidator.resetPasswordByEmail,
     catchError,
     userController.resetPassword
   )

@@ -188,16 +188,14 @@ export const verifyInvitation = asyncHandler(
 
 export const resetPassword = asyncHandler(
   async (req: Request, res: Response) => {
-    const { token, password } = req.body;
-    const { email, expired } = decodeToken(token);
-    console.log({ email, expired });
+    const { email, newPassword } = req.body;
     const user = await userService.getUserByEmail(email, {
-      refreshToken: true,
       active: true,
+      blocked: true,
     });
 
-    if (!user || expired || token !== user.refreshToken) {
-      throw createHttpError(400, { message: "Invitation is expired" });
+    if (!user) {
+      throw createHttpError(400, { message: "User not found" });
     }
 
     if (!user?.active) {
@@ -209,11 +207,11 @@ export const resetPassword = asyncHandler(
     if (user?.blocked) {
       throw createHttpError(400, { message: "User is blocked" });
     }
+
     await userService.editUser(user._id, {
-      password: await hashPassword(password),
-      refreshToken: "",
+      password: await hashPassword(newPassword),
     });
-    res.send(createResponse(null, "Password updated sucssefully"));
+    res.send(createResponse(null, "Password updated successfully"));
   }
 );
 
